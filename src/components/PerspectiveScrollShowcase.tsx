@@ -55,15 +55,19 @@ const ProjectCard = ({
     index: number;
     progress: MotionValue<number>;
 }) => {
-    // Instantly flip visibility at exactly 180 degree points (x.5 progress)
-    const opacity = useTransform(progress, (p) => {
-        return (p >= index - 0.5 && p < index + 0.5) ? 1 : 0;
+    // Hide cards that are more than 1 rotation away from the current view 
+    // to avoid coplanar Z-fighting among multiple front-facing cards.
+    const visibility = useTransform(progress, (p) => {
+        return Math.abs(p - index) <= 1.0 ? "visible" : "hidden";
     });
 
     return (
         <motion.div
-            style={{ opacity }}
-            className="absolute inset-0 w-full h-full overflow-hidden rounded-2xl sm:rounded-[2rem] border border-white/10 bg-[#0a0a0a] shadow-2xl"
+            style={{
+                rotateX: index * 180,
+                visibility
+            }}
+            className="absolute inset-0 w-full h-full overflow-hidden rounded-2xl sm:rounded-[2rem] border border-white/10 bg-[#0a0a0a] shadow-[0_0_100px_rgba(0,0,0,0.5)] [backface-visibility:hidden]"
         >
             <img
                 src={project.src}
@@ -107,7 +111,7 @@ export default function PerspectiveScrollShowcase({ projects }: PerspectiveScrol
         const handleWheel = (e: WheelEvent) => {
             e.preventDefault();
             const current = progress.get();
-            // Sensitivity tuned so ~1 scroll chunk completes 1 rotation perfectly
+            // Sensitivity tuned to make scrolling comfortable
             let next = current + e.deltaY * 0.0015;
             next = Math.max(0, Math.min(maxProgress, next));
             progress.set(next);
@@ -148,15 +152,9 @@ export default function PerspectiveScrollShowcase({ projects }: PerspectiveScrol
         restDelta: 0.001,
     });
 
-    // Calculate global rotation (1 progress unit = 360 degrees)
-    // This causes each image mapped sequentially to have 1 full 360 rotation cycle forward and backwards
-    const rotateX = useTransform(springProgress, (p) => p * 360);
-
-    // Calculate synchronized scaling (shrinks to 0.7x exactly midway through a flip at 180 degrees)
-    const scale = useTransform(springProgress, (p) => {
-        // Math.sin(p * PI) creates a pulsating rhythm perfectly synced with the 180 degree flip
-        return 1 - Math.abs(Math.sin(p * Math.PI)) * 0.3;
-    });
+    // Calculate global container rotation. Every 1.0 progress spins the container 180 degrees exactly.
+    // With backface visibility hidden on the children, 180 flips reveal the alternating images seamlessly.
+    const rotateX = useTransform(springProgress, (p) => p * 180);
 
     if (!projects || projects.length === 0) return null;
 
@@ -179,10 +177,9 @@ export default function PerspectiveScrollShowcase({ projects }: PerspectiveScrol
             <motion.div
                 style={{
                     rotateX,
-                    scale,
                     transformStyle: "preserve-3d",
                 }}
-                className="relative w-[90%] max-w-6xl aspect-[4/3] sm:aspect-[16/9] shadow-[0_0_100px_rgba(0,0,0,0.5)] cursor-grab active:cursor-grabbing"
+                className="relative w-[90%] max-w-6xl aspect-[4/3] sm:aspect-[16/9] cursor-grab active:cursor-grabbing"
             >
                 {projects.map((project, i) => (
                     <ProjectCard
