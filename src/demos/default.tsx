@@ -1,5 +1,5 @@
 import { useState } from "react";
-import PerspectiveScrollShowcase from "../components/ui/component";
+import PerspectiveScrollShowcase from "../components/ui/perspective-scroll-showcase";
 import { Sun, Moon } from "lucide-react";
 
 const dummyProjects = [
