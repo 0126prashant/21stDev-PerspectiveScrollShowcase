@@ -23,8 +23,17 @@ const dummyProjects: Project[] = [
 
 function App() {
   return (
-    <div className="w-full h-screen bg-black text-white font-sans antialiased overflow-hidden">
+    <div className="w-full min-h-screen bg-black text-white font-sans antialiased overflow-x-clip">
+      <div className="h-[50vh] flex items-center justify-center border-b border-white/10">
+        <h1 className="text-4xl text-white/50">Scroll down to see the magic ✨</h1>
+      </div>
+
       <PerspectiveScrollShowcase projects={dummyProjects} />
+
+      <div className="h-screen flex flex-col items-center justify-center bg-zinc-950 border-t border-white/10">
+        <h1 className="text-2xl text-white/50 mb-4">You have reached the bottom</h1>
+        <p className="text-white/30 text-lg">Add more components here</p>
+      </div>
     </div>
   );
 }

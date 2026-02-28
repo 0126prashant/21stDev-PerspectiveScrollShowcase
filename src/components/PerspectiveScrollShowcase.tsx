@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef, useEffect } from "react";
-import { motion, useTransform, useSpring, MotionValue, useMotionValue } from "framer-motion";
+import { useRef } from "react";
+import { motion, useTransform, useSpring, MotionValue, useScroll } from "framer-motion";
 
 export interface Project {
     title: string;
@@ -100,96 +100,67 @@ const ProjectCard = ({
 
 export default function PerspectiveScrollShowcase({ projects }: PerspectiveScrollShowcaseProps) {
     const containerRef = useRef<HTMLDivElement>(null);
-    const progress = useMotionValue(0);
 
-    useEffect(() => {
-        const el = containerRef.current;
-        if (!el) return;
+    const { scrollYProgress } = useScroll({
+        target: containerRef,
+        offset: ["start start", "end end"],
+    });
 
-        const maxProgress = Math.max(0, projects.length - 1);
-
-        const handleWheel = (e: WheelEvent) => {
-            e.preventDefault();
-            const current = progress.get();
-            // Sensitivity tuned to make scrolling comfortable
-            let next = current + e.deltaY * 0.0015;
-            next = Math.max(0, Math.min(maxProgress, next));
-            progress.set(next);
-        };
-
-        let touchStartY = 0;
-        const handleTouchStart = (e: TouchEvent) => {
-            touchStartY = e.touches[0].clientY;
-        };
-
-        const handleTouchMove = (e: TouchEvent) => {
-            e.preventDefault();
-            const touchY = e.touches[0].clientY;
-            const deltaY = touchStartY - touchY;
-            touchStartY = touchY;
-
-            const current = progress.get();
-            let next = current + deltaY * 0.003;
-            next = Math.max(0, Math.min(maxProgress, next));
-            progress.set(next);
-        };
-
-        // Use passive: false so we have permission to cancel native scroll
-        el.addEventListener("wheel", handleWheel, { passive: false });
-        el.addEventListener("touchstart", handleTouchStart, { passive: false });
-        el.addEventListener("touchmove", handleTouchMove, { passive: false });
-
-        return () => {
-            el.removeEventListener("wheel", handleWheel);
-            el.removeEventListener("touchstart", handleTouchStart);
-            el.removeEventListener("touchmove", handleTouchMove);
-        };
-    }, [progress, projects.length]);
-
-    const springProgress = useSpring(progress, {
+    const springProgress = useSpring(scrollYProgress, {
         stiffness: 100,
         damping: 30,
         restDelta: 0.001,
     });
 
-    // Calculate global container rotation. Every 1.0 progress spins the container 180 degrees exactly.
-    // With backface visibility hidden on the children, 180 flips reveal the alternating images seamlessly.
-    const rotateX = useTransform(springProgress, (p) => p * 180);
+    // Calculate global container rotation. 
+    // We map the 0-1 scroll progress to (projects.length - 1) * 180 degrees.
+    const totalRotation = Math.max(0, projects.length - 1) * 180;
+    const rotateX = useTransform(springProgress, [0, 1], [0, totalRotation]);
+
+    // Pass a progress value from 0 to (projects.length - 1) down to the children
+    const normalizedProgress = useTransform(springProgress, [0, 1], [0, Math.max(0, projects.length - 1)]);
 
     if (!projects || projects.length === 0) return null;
+
+    // We make the container height dynamic based on the number of projects.
+    // E.g., 3 projects = 300vh tall area.
+    const containerHeight = Math.max(projects.length * 100, 100);
 
     return (
         <div
             ref={containerRef}
-            className="relative w-full h-[100vh] bg-black overflow-hidden flex items-center justify-center [perspective:1200px]"
+            className="relative w-full bg-black"
+            style={{ height: `${containerHeight}vh` }}
         >
-            {/* Background Marquee Texts */}
-            {projects.map((project, i) => (
-                <BackgroundText
-                    key={`bg-${i}`}
-                    index={i}
-                    progress={springProgress}
-                    text={project.bgText}
-                />
-            ))}
-
-            {/* 3D Canvas */}
-            <motion.div
-                style={{
-                    rotateX,
-                    transformStyle: "preserve-3d",
-                }}
-                className="relative w-[90%] max-w-6xl aspect-[4/3] sm:aspect-[16/9] cursor-grab active:cursor-grabbing"
-            >
+            <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center [perspective:1200px]">
+                {/* Background Marquee Texts */}
                 {projects.map((project, i) => (
-                    <ProjectCard
-                        key={`card-${i}`}
+                    <BackgroundText
+                        key={`bg-${i}`}
                         index={i}
-                        progress={springProgress}
-                        project={project}
+                        progress={normalizedProgress}
+                        text={project.bgText}
                     />
                 ))}
-            </motion.div>
+
+                {/* 3D Canvas */}
+                <motion.div
+                    style={{
+                        rotateX,
+                        transformStyle: "preserve-3d",
+                    }}
+                    className="relative w-[90%] max-w-6xl aspect-[4/3] sm:aspect-[16/9] cursor-grab active:cursor-grabbing"
+                >
+                    {projects.map((project, i) => (
+                        <ProjectCard
+                            key={`card-${i}`}
+                            index={i}
+                            progress={normalizedProgress}
+                            project={project}
+                        />
+                    ))}
+                </motion.div>
+            </div>
         </div>
     );
 }
