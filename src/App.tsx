@@ -1,39 +1,79 @@
-import PerspectiveScrollShowcase, { type Project } from './components/PerspectiveScrollShowcase';
+import { useState } from "react";
+import PerspectiveScrollShowcase from "./components/PerspectiveScrollShowcase";
+import { Sun, Moon } from "lucide-react";
 
-const dummyProjects: Project[] = [
+const dummyProjects = [
   {
     title: "AI Gift Finder",
     tags: ["AI", "UX research", "App design"],
-    bgText: "BOL BOL BOL",
-    src: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?q=80&w=3540&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    bgText: "AI GIFT FINDER • AI GIFT FINDER • AI GIFT FINDER • AI GIFT FINDER •",
+    src: "https://images.unsplash.com/photo-1542314831-c6a4d142ce1d?w=1600&h=900&fit=crop&q=80",
   },
   {
-    title: "Iquality Dashboard",
-    tags: ["Product design", "Design system", "Branding"],
-    bgText: "IQUALITY IQUALITY",
-    src: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2000"
+    title: "Eco Dashboard",
+    tags: ["SaaS", "Dashboard", "Web"],
+    bgText: "ECO DASHBOARD • ECO DASHBOARD • ECO DASHBOARD • ECO DASHBOARD •",
+    src: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1600&h=900&fit=crop&q=80",
   },
   {
-    title: "Eco Tracker",
-    tags: ["Sustainability", "Mobile app", "Interaction"],
-    bgText: "GREEN GREEN GREEN",
-    src: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?auto=format&fit=crop&q=80&w=2000"
-  }
+    title: "IQuality",
+    tags: ["Branding", "UI/UX", "Mobile"],
+    bgText: "IQUALITY MOBILE • IQUALITY MOBILE • IQUALITY MOBILE • IQUALITY MOBILE •",
+    src: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1600&h=900&fit=crop&q=80",
+  },
+  {
+    title: "Urban Architecture",
+    tags: ["Photography", "City", "Modern"],
+    bgText: "URBAN ARCHITECTURE • URBAN ARCHITECTURE • URBAN ARCHITECTURE • URBAN ARCHITECTURE •",
+    src: "https://images.unsplash.com/photo-1449844908441-8829872d2607?w=1600&h=900&fit=crop&q=80",
+  },
+  {
+    title: "Neon Nights",
+    tags: ["Cyberpunk", "Neon", "Dark"],
+    bgText: "NEON NIGHTS • NEON NIGHTS • NEON NIGHTS • NEON NIGHTS •",
+    src: "https://images.unsplash.com/photo-1554200876-56c2f25224fa?w=1600&h=900&fit=crop&q=80",
+  },
 ];
 
 function App() {
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === "dark" ? "light" : "dark");
+  };
+
   return (
-    <div className="w-full min-h-screen bg-black text-white font-sans antialiased overflow-x-clip">
-      <div className="h-[50vh] flex items-center justify-center border-b border-white/10">
-        <h1 className="text-4xl text-white/50">Scroll down to see the magic ✨</h1>
+    <div className={`w-full min-h-screen font-sans antialiased overflow-x-clip transition-colors duration-500 ${theme === "light" ? "bg-white text-black" : "bg-black text-white"}`}>
+
+      {/* Theme Toggle Button */}
+      <button
+        onClick={toggleTheme}
+        className={`fixed top-6 right-6 z-50 p-3 rounded-full backdrop-blur-md border transition-all duration-300 hover:scale-110 ${theme === "light" ? "bg-black/5 border-black/10 text-black hover:bg-black/10" : "bg-white/10 border-white/20 text-white hover:bg-white/20"}`}
+        aria-label="Toggle theme"
+      >
+        {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+      </button>
+
+      {/* Top Filler Content */}
+      <div className={`h-[50vh] flex items-center justify-center border-b transition-colors duration-500 ${theme === "light" ? "border-black/5" : "border-white/10"}`}>
+        <h1 className={`text-4xl ${theme === "light" ? "text-black/50" : "text-white/50"}`}>
+          Scroll down to see the magic ✨
+        </h1>
       </div>
 
-      <PerspectiveScrollShowcase projects={dummyProjects} />
+      {/* Main Component */}
+      <PerspectiveScrollShowcase projects={dummyProjects} theme={theme} />
 
-      <div className="h-screen flex flex-col items-center justify-center bg-zinc-950 border-t border-white/10">
-        <h1 className="text-2xl text-white/50 mb-4">You have reached the bottom</h1>
-        <p className="text-white/30 text-lg">Add more components here</p>
+      {/* Bottom Filler Content */}
+      <div className={`h-screen flex flex-col items-center justify-center border-t transition-colors duration-500 ${theme === "light" ? "bg-gray-100 border-black/5" : "bg-zinc-950 border-white/10"}`}>
+        <h1 className={`text-2xl mb-4 ${theme === "light" ? "text-black/50" : "text-white/50"}`}>
+          You have reached the bottom
+        </h1>
+        <p className={`text-lg ${theme === "light" ? "text-black/30" : "text-white/30"}`}>
+          Add more components here
+        </p>
       </div>
+
     </div>
   );
 }

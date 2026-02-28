@@ -29,22 +29,29 @@ const BackgroundText = ({
     const localProgress = useTransform(progress, (p) => p - index);
 
     // Smooth fade over the active 1-unit window
-    const opacity = useTransform(localProgress, [-0.5, 0, 0.5], [0, 1, 0]);
+    const opacity = useTransform(localProgress, [-0.6, 0, 0.6], [0, 1, 0]);
 
     // Shrink from top and bottom
     const scaleY = useTransform(localProgress, [-0.5, 0, 0.5], [0, 1, 0]);
 
     // Rise upwards as it scrolls
-    const y = useTransform(localProgress, [-0.5, 0, 0.5], ["0%", "-50%", "-100%"]);
+    const y = useTransform(localProgress, [-0.6, 0, 0.6], ["50%", "-50%", "-150%"]);
+
+    const marqueeText = Array(4).fill(text).join(" ");
 
     return (
         <motion.div
             style={{ opacity, scaleY, y, x: "-50%" }}
-            className="absolute top-1/2 left-1/2 whitespace-nowrap pointer-events-none"
+            className="absolute top-1/2 left-1/2 overflow-hidden w-[200vw] pointer-events-none"
         >
-            <h1 className={`text-[15vw] font-black uppercase tracking-tighter mix-blend-overlay text-center leading-none transition-colors duration-500 ${theme === "light" ? "text-black/10" : "text-white/10"}`}>
-                {text}
-            </h1>
+            <motion.div
+                animate={{ x: ["0%", "-50%"] }}
+                transition={{ ease: "linear", duration: 30, repeat: Infinity }}
+                className={`flex whitespace-nowrap text-[max(8rem,15vw)] font-black uppercase tracking-tighter mix-blend-overlay leading-none transition-colors duration-500 ${theme === "light" ? "text-black/5" : "text-white/5"}`}
+            >
+                <span>{marqueeText}</span>
+                <span>{marqueeText}</span>
+            </motion.div>
         </motion.div>
     );
 };
@@ -71,8 +78,8 @@ const ProjectCard = ({
                 visibility
             }}
             className={`absolute inset-0 w-full h-full overflow-hidden rounded-2xl sm:rounded-[2rem] border transition-colors duration-500 [backface-visibility:hidden] ${theme === "light"
-                    ? "bg-white border-black/10 shadow-[0_0_50px_rgba(0,0,0,0.1)]"
-                    : "bg-[#0a0a0a] border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)]"
+                ? "bg-white border-black/10 shadow-[0_0_50px_rgba(0,0,0,0.1)]"
+                : "bg-[#0a0a0a] border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)]"
                 }`}
         >
             <img
