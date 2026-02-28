@@ -12,34 +12,37 @@ export interface Project {
 
 interface PerspectiveScrollShowcaseProps {
     projects: Project[];
+    theme?: "light" | "dark";
 }
 
 const BackgroundText = ({
     text,
     index,
-    progress
+    progress,
+    theme = "dark"
 }: {
     text: string;
     index: number;
     progress: MotionValue<number>;
+    theme?: "light" | "dark";
 }) => {
-    // Hard step swap exactly at halfway points
-    const opacity = useTransform(progress, (p) => {
-        return (p >= index - 0.5 && p < index + 0.5) ? 1 : 0;
-    });
+    const localProgress = useTransform(progress, (p) => p - index);
 
-    // Smooth scroll translation based on local progress
-    const x = useTransform(progress, (p) => {
-        const localP = p - index;
-        return `${localP * -30}%`;
-    });
+    // Smooth fade over the active 1-unit window
+    const opacity = useTransform(localProgress, [-0.5, 0, 0.5], [0, 1, 0]);
+
+    // Shrink from top and bottom
+    const scaleY = useTransform(localProgress, [-0.5, 0, 0.5], [0, 1, 0]);
+
+    // Rise upwards as it scrolls
+    const y = useTransform(localProgress, [-0.5, 0, 0.5], ["0%", "-50%", "-100%"]);
 
     return (
         <motion.div
-            style={{ opacity, x }}
-            className="absolute top-1/2 left-0 -translate-y-1/2 whitespace-nowrap pointer-events-none"
+            style={{ opacity, scaleY, y, x: "-50%" }}
+            className="absolute top-1/2 left-1/2 whitespace-nowrap pointer-events-none"
         >
-            <h1 className="text-[15vw] font-black text-white/10 uppercase tracking-tighter mix-blend-overlay">
+            <h1 className={`text-[15vw] font-black uppercase tracking-tighter mix-blend-overlay text-center leading-none transition-colors duration-500 ${theme === "light" ? "text-black/10" : "text-white/10"}`}>
                 {text}
             </h1>
         </motion.div>
@@ -50,13 +53,13 @@ const ProjectCard = ({
     project,
     index,
     progress,
+    theme = "dark"
 }: {
     project: Project;
     index: number;
     progress: MotionValue<number>;
+    theme?: "light" | "dark";
 }) => {
-    // Hide cards that are more than 1 rotation away from the current view 
-    // to avoid coplanar Z-fighting among multiple front-facing cards.
     const visibility = useTransform(progress, (p) => {
         return Math.abs(p - index) <= 1.0 ? "visible" : "hidden";
     });
@@ -67,7 +70,10 @@ const ProjectCard = ({
                 rotateX: index * 180,
                 visibility
             }}
-            className="absolute inset-0 w-full h-full overflow-hidden rounded-2xl sm:rounded-[2rem] border border-white/10 bg-[#0a0a0a] shadow-[0_0_100px_rgba(0,0,0,0.5)] [backface-visibility:hidden]"
+            className={`absolute inset-0 w-full h-full overflow-hidden rounded-2xl sm:rounded-[2rem] border transition-colors duration-500 [backface-visibility:hidden] ${theme === "light"
+                    ? "bg-white border-black/10 shadow-[0_0_50px_rgba(0,0,0,0.1)]"
+                    : "bg-[#0a0a0a] border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)]"
+                }`}
         >
             <img
                 src={project.src}
@@ -75,10 +81,9 @@ const ProjectCard = ({
                 className="w-full h-full object-cover opacity-90"
             />
 
-            {/* Dark gradient overlay for text readability */}
+            {/* Dark gradient overlay for text readability always stays dark so white text remains readable */}
             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none" />
 
-            {/* Metadata Overlay */}
             <div className="absolute bottom-0 left-0 p-6 sm:p-10 flex flex-col gap-3 w-full">
                 <h2 className="text-3xl sm:text-5xl font-bold text-white tracking-tight">
                     {project.title}
@@ -98,7 +103,7 @@ const ProjectCard = ({
     );
 };
 
-export default function PerspectiveScrollShowcase({ projects }: PerspectiveScrollShowcaseProps) {
+export default function PerspectiveScrollShowcase({ projects, theme = "dark" }: PerspectiveScrollShowcaseProps) {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const { scrollYProgress } = useScroll({
@@ -112,24 +117,19 @@ export default function PerspectiveScrollShowcase({ projects }: PerspectiveScrol
         restDelta: 0.001,
     });
 
-    // Calculate global container rotation. 
-    // We map the 0-1 scroll progress to (projects.length - 1) * 180 degrees.
     const totalRotation = Math.max(0, projects.length - 1) * 180;
     const rotateX = useTransform(springProgress, [0, 1], [0, totalRotation]);
 
-    // Pass a progress value from 0 to (projects.length - 1) down to the children
     const normalizedProgress = useTransform(springProgress, [0, 1], [0, Math.max(0, projects.length - 1)]);
 
     if (!projects || projects.length === 0) return null;
 
-    // We make the container height dynamic based on the number of projects.
-    // E.g., 3 projects = 300vh tall area.
     const containerHeight = Math.max(projects.length * 100, 100);
 
     return (
         <div
             ref={containerRef}
-            className="relative w-full bg-black"
+            className={`relative w-full transition-colors duration-500 ${theme === "light" ? "bg-gray-50" : "bg-black"}`}
             style={{ height: `${containerHeight}vh` }}
         >
             <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center [perspective:1200px]">
@@ -140,6 +140,7 @@ export default function PerspectiveScrollShowcase({ projects }: PerspectiveScrol
                         index={i}
                         progress={normalizedProgress}
                         text={project.bgText}
+                        theme={theme}
                     />
                 ))}
 
@@ -157,6 +158,7 @@ export default function PerspectiveScrollShowcase({ projects }: PerspectiveScrol
                             index={i}
                             progress={normalizedProgress}
                             project={project}
+                            theme={theme}
                         />
                     ))}
                 </motion.div>
