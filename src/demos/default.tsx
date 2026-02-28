@@ -1,6 +1,4 @@
-import { useState } from "react";
 import PerspectiveScrollShowcase from "../components/ui/component";
-import { Sun, Moon } from "lucide-react";
 
 const dummyProjects = [
   {
@@ -36,40 +34,25 @@ const dummyProjects = [
 ];
 
 function App() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === "dark" ? "light" : "dark");
-  };
-
   return (
-    <div className={`w-full min-h-screen font-sans antialiased overflow-x-clip transition-colors duration-500 ${theme === "light" ? "bg-white text-black" : "bg-black text-white"}`}>
-
-      {/* Theme Toggle Button */}
-      <button
-        onClick={toggleTheme}
-        className={`fixed top-6 right-6 z-50 p-3 rounded-full backdrop-blur-md border transition-all duration-300 hover:scale-110 ${theme === "light" ? "bg-black/5 border-black/10 text-black hover:bg-black/10" : "bg-white/10 border-white/20 text-white hover:bg-white/20"}`}
-        aria-label="Toggle theme"
-      >
-        {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-      </button>
+    <div className="w-full min-h-screen font-sans antialiased overflow-x-clip transition-colors duration-500 bg-white dark:bg-black text-black dark:text-white">
 
       {/* Top Filler Content */}
-      <div className={`h-[50vh] flex items-center justify-center border-b transition-colors duration-500 ${theme === "light" ? "border-black/5" : "border-white/10"}`}>
-        <h1 className={`text-4xl ${theme === "light" ? "text-black/50" : "text-white/50"}`}>
+      <div className="h-[50vh] flex items-center justify-center border-b transition-colors duration-500 border-black/5 dark:border-white/10">
+        <h1 className="text-4xl text-black/50 dark:text-white/50">
           Scroll down to see the magic ✨
         </h1>
       </div>
 
       {/* Main Component */}
-      <PerspectiveScrollShowcase projects={dummyProjects} theme={theme} />
+      <PerspectiveScrollShowcase projects={dummyProjects} />
 
       {/* Bottom Filler Content */}
-      <div className={`h-screen flex flex-col items-center justify-center border-t transition-colors duration-500 ${theme === "light" ? "bg-gray-100 border-black/5" : "bg-zinc-950 border-white/10"}`}>
-        <h1 className={`text-2xl mb-4 ${theme === "light" ? "text-black/50" : "text-white/50"}`}>
+      <div className="h-screen flex flex-col items-center justify-center border-t transition-colors duration-500 bg-gray-100 dark:bg-zinc-950 border-black/5 dark:border-white/10">
+        <h1 className="text-2xl mb-4 text-black/50 dark:text-white/50">
           You have reached the bottom
         </h1>
-        <p className={`text-lg ${theme === "light" ? "text-black/30" : "text-white/30"}`}>
+        <p className="text-lg text-black/30 dark:text-white/30">
           Add more components here
         </p>
       </div>

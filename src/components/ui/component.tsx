@@ -12,19 +12,16 @@ export interface Project {
 
 interface PerspectiveScrollShowcaseProps {
     projects: Project[];
-    theme?: "light" | "dark";
 }
 
 const BackgroundText = ({
     text,
     index,
-    progress,
-    theme = "dark"
+    progress
 }: {
     text: string;
     index: number;
     progress: MotionValue<number>;
-    theme?: "light" | "dark";
 }) => {
     const localProgress = useTransform(progress, (p) => p - index);
 
@@ -48,7 +45,7 @@ const BackgroundText = ({
             <motion.div
                 animate={{ x: ["0%", "-50%"] }}
                 transition={{ ease: "linear", duration: 30, repeat: Infinity }}
-                className={`flex whitespace-nowrap text-[max(4rem,7.5vw)] font-black uppercase tracking-tighter mix-blend-overlay leading-none transition-colors duration-500 ${theme === "light" ? "text-black/20" : "text-white/20"}`}
+                className="flex whitespace-nowrap text-[max(4rem,7.5vw)] font-black uppercase tracking-tighter mix-blend-overlay leading-none transition-colors duration-500 text-black/20 dark:text-white/20"
             >
                 <span>{marqueeText}</span>
                 <span>{marqueeText}</span>
@@ -60,13 +57,11 @@ const BackgroundText = ({
 const ProjectCard = ({
     project,
     index,
-    progress,
-    theme = "dark"
+    progress
 }: {
     project: Project;
     index: number;
     progress: MotionValue<number>;
-    theme?: "light" | "dark";
 }) => {
     const visibility = useTransform(progress, (p) => {
         return Math.abs(p - index) <= 1.0 ? "visible" : "hidden";
@@ -78,10 +73,7 @@ const ProjectCard = ({
                 rotateX: index * 180,
                 visibility
             }}
-            className={`absolute inset-0 w-full h-full overflow-hidden rounded-2xl sm:rounded-[2rem] border transition-colors duration-500 [backface-visibility:hidden] ${theme === "light"
-                ? "bg-white border-black/10 shadow-[0_0_50px_rgba(0,0,0,0.1)]"
-                : "bg-[#0a0a0a] border-white/10 shadow-[0_0_100px_rgba(0,0,0,0.5)]"
-                }`}
+            className="absolute inset-0 w-full h-full overflow-hidden rounded-2xl sm:rounded-[2rem] border transition-colors duration-500 [backface-visibility:hidden] bg-white dark:bg-[#0a0a0a] border-black/10 dark:border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.1)] dark:shadow-[0_0_100px_rgba(0,0,0,0.5)]"
         >
             <img
                 src={project.src}
@@ -111,7 +103,7 @@ const ProjectCard = ({
     );
 };
 
-export default function PerspectiveScrollShowcase({ projects, theme = "dark" }: PerspectiveScrollShowcaseProps) {
+export default function PerspectiveScrollShowcase({ projects }: PerspectiveScrollShowcaseProps) {
     const containerRef = useRef<HTMLDivElement>(null);
 
     const { scrollYProgress } = useScroll({
@@ -137,7 +129,7 @@ export default function PerspectiveScrollShowcase({ projects, theme = "dark" }: 
     return (
         <div
             ref={containerRef}
-            className={`relative w-full transition-colors duration-500 ${theme === "light" ? "bg-gray-50" : "bg-black"}`}
+            className="relative w-full transition-colors duration-500 bg-gray-50 dark:bg-black"
             style={{ height: `${containerHeight}vh` }}
         >
             <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center justify-center [perspective:1200px]">
@@ -148,7 +140,6 @@ export default function PerspectiveScrollShowcase({ projects, theme = "dark" }: 
                         index={i}
                         progress={normalizedProgress}
                         text={project.bgText}
-                        theme={theme}
                     />
                 ))}
 
@@ -166,7 +157,6 @@ export default function PerspectiveScrollShowcase({ projects, theme = "dark" }: 
                             index={i}
                             progress={normalizedProgress}
                             project={project}
-                            theme={theme}
                         />
                     ))}
                 </motion.div>
