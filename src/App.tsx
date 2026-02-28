@@ -7,7 +7,7 @@ const dummyProjects = [
     title: "AI Gift Finder",
     tags: ["AI", "UX research", "App design"],
     bgText: "AI GIFT FINDER • AI GIFT FINDER • AI GIFT FINDER • AI GIFT FINDER •",
-    src: "https://images.unsplash.com/photo-1542314831-c6a4d142ce1d?w=1600&h=900&fit=crop&q=80",
+    src: "https://images.unsplash.com/photo-1676530780285-c3baa83ad200?q=80&w=3542&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
   },
   {
     title: "Eco Dashboard",
