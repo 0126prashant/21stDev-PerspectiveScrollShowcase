@@ -48,7 +48,7 @@ const BackgroundText = ({
             <motion.div
                 animate={{ x: ["0%", "-50%"] }}
                 transition={{ ease: "linear", duration: 30, repeat: Infinity }}
-                className={`flex whitespace-nowrap text-[max(4rem,7.5vw)] font-black uppercase tracking-tighter mix-blend-overlay leading-none transition-colors duration-500 ${theme === "light" ? "text-black/5" : "text-white/5"}`}
+                className={`flex whitespace-nowrap text-[max(4rem,7.5vw)] font-black uppercase tracking-tighter mix-blend-overlay leading-none transition-colors duration-500 ${theme === "light" ? "text-black/20" : "text-white/20"}`}
             >
                 <span>{marqueeText}</span>
                 <span>{marqueeText}</span>
