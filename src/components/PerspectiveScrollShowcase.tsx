@@ -28,14 +28,15 @@ const BackgroundText = ({
 }) => {
     const localProgress = useTransform(progress, (p) => p - index);
 
-    // Smooth fade over the active 1-unit window
-    const opacity = useTransform(localProgress, [-0.6, 0, 0.6], [0, 1, 0]);
+    // Fade to exactly 0 at precisely 0.5 (180 degrees)
+    const opacity = useTransform(localProgress, [-0.5, 0, 0.5], [0, 1, 0]);
 
-    // Shrink from top and bottom
+    // Optional: Keep the squash effect, or just let it fade? 
+    // The user said "slowely hiding it on scroll" which implies fade, but scaleY helps the 3D effect.
     const scaleY = useTransform(localProgress, [-0.5, 0, 0.5], [0, 1, 0]);
 
-    // Rise upwards as it scrolls
-    const y = useTransform(localProgress, [-0.6, 0, 0.6], ["50%", "-50%", "-150%"]);
+    // Keep it precisely centered vertically at all times.
+    const y = "-50%";
 
     const marqueeText = Array(4).fill(text).join(" ");
 
@@ -47,7 +48,7 @@ const BackgroundText = ({
             <motion.div
                 animate={{ x: ["0%", "-50%"] }}
                 transition={{ ease: "linear", duration: 30, repeat: Infinity }}
-                className={`flex whitespace-nowrap text-[max(8rem,15vw)] font-black uppercase tracking-tighter mix-blend-overlay leading-none transition-colors duration-500 ${theme === "light" ? "text-black/5" : "text-white/5"}`}
+                className={`flex whitespace-nowrap text-[max(4rem,7.5vw)] font-black uppercase tracking-tighter mix-blend-overlay leading-none transition-colors duration-500 ${theme === "light" ? "text-black/5" : "text-white/5"}`}
             >
                 <span>{marqueeText}</span>
                 <span>{marqueeText}</span>
