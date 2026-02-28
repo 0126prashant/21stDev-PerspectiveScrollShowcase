@@ -1,6 +1,4 @@
-import { useState } from "react";
 import PerspectiveScrollShowcase from "../components/ui/perspective-scroll-showcase";
-import { Sun, Moon } from "lucide-react";
 
 const dummyProjects = [
   {
@@ -35,48 +33,28 @@ const dummyProjects = [
   },
 ];
 
-function App() {
-  const [theme, setTheme] = useState<"light" | "dark">("dark");
-
-  const toggleTheme = () => {
-    setTheme(prev => prev === "dark" ? "light" : "dark");
-  };
-
+export default function App() {
   return (
-    <div className={`${theme} antialiased font-sans`}>
-      <div className="w-full min-h-screen overflow-x-clip transition-colors duration-500 bg-white dark:bg-black text-black dark:text-white">
+    <div className="w-full min-h-screen overflow-x-clip transition-colors duration-500 bg-white dark:bg-black text-black dark:text-white font-sans antialiased">
+      {/* Top Filler Content */}
+      <div className="h-[50vh] flex items-center justify-center border-b transition-colors duration-500 border-black/5 dark:border-white/10">
+        <h1 className="text-4xl text-black/50 dark:text-white/50">
+          Scroll down to see the magic ✨
+        </h1>
+      </div>
 
-        {/* Theme Toggle Button (For local dev only) */}
-        <button
-          onClick={toggleTheme}
-          className="fixed top-6 right-6 z-50 p-3 rounded-full backdrop-blur-md border transition-all duration-300 hover:scale-110 bg-black/5 dark:bg-white/10 border-black/10 dark:border-white/20 text-black dark:text-white"
-          aria-label="Toggle theme"
-        >
-          {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
-        </button>
+      {/* Main Component */}
+      <PerspectiveScrollShowcase projects={dummyProjects} />
 
-        {/* Top Filler Content */}
-        <div className="h-[50vh] flex items-center justify-center border-b transition-colors duration-500 border-black/5 dark:border-white/10">
-          <h1 className="text-4xl text-black/50 dark:text-white/50">
-            Scroll down to see the magic ✨
-          </h1>
-        </div>
-
-        {/* Main Component */}
-        <PerspectiveScrollShowcase projects={dummyProjects} />
-
-        {/* Bottom Filler Content */}
-        <div className="h-screen flex flex-col items-center justify-center border-t transition-colors duration-500 bg-gray-100 dark:bg-zinc-950 border-black/5 dark:border-white/10">
-          <h1 className="text-2xl mb-4 text-black/50 dark:text-white/50">
-            You have reached the bottom
-          </h1>
-          <p className="text-lg text-black/30 dark:text-white/30">
-            Add more components here
-          </p>
-        </div>
+      {/* Bottom Filler Content */}
+      <div className="h-screen flex flex-col items-center justify-center border-t transition-colors duration-500 bg-gray-100 dark:bg-zinc-950 border-black/5 dark:border-white/10">
+        <h1 className="text-2xl mb-4 text-black/50 dark:text-white/50">
+          You have reached the bottom
+        </h1>
+        <p className="text-lg text-black/30 dark:text-white/30">
+          Add more components here
+        </p>
       </div>
     </div>
   );
 }
-
-export default App;
